@@ -15,4 +15,4 @@
 # 
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .protocol import make_message, parse_message
+from .protocol import prepare_stream, parse_stream

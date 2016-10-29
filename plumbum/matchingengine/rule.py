@@ -46,10 +46,9 @@ class RuleFactory:
         :param rule: rule represented in a Python dictionary
         :return: Rule object
         """
-        parsed_rule = json.loads(rule)
         constraints = defaultdict(list)
 
-        for key, value in parsed_rule.items():
+        for key, value in rule.items():
             for operator, operand in value.items():
                 fun = _two_partial(RuleFactory.operators[operator], operand)
                 constraints[key].append(fun)

@@ -42,7 +42,7 @@ class RuleFactory:
     def from_dict(rule):
         """
         Example:
-        {"level": {">=": 1, "<": 10}, "message_body": {"contain": "ERROR"}}
+        {"level": {">=": 1, "<": 10}, "message_body": {"contains": "ERROR"}}
         :param rule: rule represented in a Python dictionary
         :return: Rule object
         """

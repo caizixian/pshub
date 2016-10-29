@@ -1,17 +1,34 @@
-"""
-sub \t rule ... \r\n
-pub \t Message ... \r\n
-rep \t reply ... \r\n
-"""
 #!/usr/bin/env python3
 import json
-def make_body(obj): 
-    return json.dumps(obj) 
 
-def parse_body(string): 
+delimiter = b"\r\n"
+
+
+def make_body(obj):
+    """
+
+    :param obj: message body, should be JSON-serializable
+    :return: encoded message body
+    """
+    return json.dumps(obj)
+
+
+def parse_body(string):
+    """
+
+    :param string: encoded message body, should be JSON-deserializable
+    :return: message body
+    """
     return json.loads(string)
 
+
 def make_message(ty, obj):
+    """
+
+    :param ty: type of the message
+    :param obj: message body, should be JSON-serializable
+    :return: encoded message
+    """
     types = {
         'sub': lambda x: 'sub\t' + make_body(x),
         'pub': lambda x: 'pub\t' + make_body(x),
@@ -19,33 +36,30 @@ def make_message(ty, obj):
     }
     return types[ty](obj)
 
-def make_result(string):
+
+def parse_message(string):
     ty, body = string.split('\t')
     return ty, parse_body(body)
 
-def parse_message(string, rest):
-    rest += string
-    result = []
-    rest_list = rest.split('\r\n')
-    for x in rest_list[:-1]:
-        result.append(make_result(x))
-    return result, rest_list[-1]
-"""
-def main():
-    a = {'level': 5, 'sum': 7}
-    c = {'level': 7}
-    sa = make_message('pub', a)
-    sc = make_message('sub', c)
-    sa += '\r\n'
-    sa += sc[:-2]
-    sc = sc[-2:] + '\r\n'
-    res, rest = parse_message(sa, '')
-    print(res)
-    print(rest)
-    res, rest = parse_message(sc, rest)
-    print(res)
-    print(rest)
 
-if __name__ == '__main__':
-    main()
-"""
+def prepare_stream(msg):
+    """
+
+    :param msg: encoded message
+    :return:  properly wrapped message for transmission
+    """
+    return msg.encode('utf-8') + delimiter
+
+
+def parse_stream(rest, data):
+    """
+
+    :param data: currently received data
+    :param rest: unprocessed data from last transmission
+    :return: message entities extracted from data, unprocessed data
+    """
+    msgs = []
+    tokens = (rest + data).split(delimiter)
+    for x in tokens[:-1]:
+        msgs.append(parse_message(x.decode('utf-8')))
+    return msgs, tokens[-1]

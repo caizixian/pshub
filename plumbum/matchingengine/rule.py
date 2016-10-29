@@ -5,7 +5,7 @@ import json
 from collections import defaultdict
 
 
-def my_not(f):
+def _my_not(f):
     @wraps(f)
     def foo(*args, **kwargs):
         return not f(*args, **kwargs)
@@ -13,7 +13,7 @@ def my_not(f):
     return foo
 
 
-def two_partial(func, second_param):
+def _two_partial(func, second_param):
     def fun(first_param):
         return func(first_param, second_param)
 
@@ -21,6 +21,9 @@ def two_partial(func, second_param):
 
 
 class RuleFactory:
+    """
+    RuleFactory provides methods to create Rules
+    """
     operators = {
         "contains": contains,
         "<": lt,
@@ -29,20 +32,26 @@ class RuleFactory:
         ">=": ge,
         "=": eq,
         "!=": ne,
-        "excludes": my_not(contains)
+        "excludes": _my_not(contains)
     }
 
     def __init__(self):
         pass
 
     @staticmethod
-    def from_string(rule_str):
-        parsed_rule = json.loads(rule_str)
+    def from_dict(rule):
+        """
+        Example:
+        {"level": {">=": 1, "<": 10}, "message_body": {"contain": "ERROR"}}
+        :param rule: rule represented in a Python dictionary
+        :return: Rule object
+        """
+        parsed_rule = json.loads(rule)
         constraints = defaultdict(list)
 
         for key, value in parsed_rule.items():
             for operator, operand in value.items():
-                fun = two_partial(RuleFactory.operators[operator], operand)
+                fun = _two_partial(RuleFactory.operators[operator], operand)
                 constraints[key].append(fun)
 
         return Rule(constraints=constraints)
@@ -53,9 +62,15 @@ class Rule:
         self.constraints = constraints
 
     def match(self, msg):
-        parsed_msg = json.loads(msg)
+        """
+        Match message against some constraints
+        Example:
+        {"level": 2, "message_body": "ERROR occurs"}
+        :param msg: message represented in a Python dictionary
+        :return: Successfully matched or not
+        """
 
-        for k, v in parsed_msg.items():
+        for k, v in msg.items():
             for fun in self.constraints[k]:
                 if not fun(v):
                     return False

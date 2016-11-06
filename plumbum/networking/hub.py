@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from plumbum.networking.protocol import parse_stream, prepare_stream, make_message
+from plumbum.networking.protocol import parse_stream, prepare_stream, \
+    make_message
 from plumbum.matchingengine import RuleFactory
 
 
@@ -40,6 +41,8 @@ class HubProtocol(asyncio.Protocol):
 
             elif ty == "pub":
                 self.clients.publish(body)
+                self.transport.write(
+                    prepare_stream(make_message("rep", {"succeeded": True})))
             else:
                 logging.warning("Invalid message type: {} from {}".format(ty,
                                                                           self.peername))

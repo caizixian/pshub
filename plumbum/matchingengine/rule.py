@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from operator import lt, le, gt, ge, eq, ne, contains
 from functools import wraps
-import json
+import logging
 from collections import defaultdict
 
 
@@ -68,10 +68,11 @@ class Rule:
         :param msg: message represented in a Python dictionary
         :return: Successfully matched or not
         """
-
+        logging.debug("Matching {}".format(msg))
         for k, v in msg.items():
             for fun in self.constraints[k]:
                 if not fun(v):
+                    logging.debug("Doesn't match")
                     return False
-
+        logging.debug("Matches")
         return True

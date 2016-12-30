@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Plumbum - A Pub/Sub framework implemented in Python
+# pshub - A Pub/Sub framework implemented in Python
 # Copyright (C) 2016  caizixian, lwher
 # 
 # This program is free software: you can redistribute it and/or modify

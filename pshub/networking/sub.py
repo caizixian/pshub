@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Plumbum - A Pub/Sub framework implemented in Python
+# pshub - A Pub/Sub framework implemented in Python
 # Copyright (C) 2016  caizixian, lwher
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,39 +18,32 @@
 
 import asyncio
 import logging
-from plumbum.networking.protocol import parse_stream, prepare_stream, \
+from pshub.networking.protocol import parse_stream, prepare_stream, \
     make_message
 
 
-class PubProtocol(asyncio.Protocol):
-    def __init__(self, loop, msg_gen):
+class SubProtocol(asyncio.Protocol):
+    def __init__(self, loop, callback, rule):
         self.loop = loop
-        self.msg_gen = msg_gen
+        self.callback = callback
+        self.rule = rule
         self.rest = bytearray()
-        self.count = 0
-
-    def publish_message(self):
-        msg = self.msg_gen.next(self.loop)
-        logging.debug("Publishing message: {}".format(msg))
-        self.transport.write(prepare_stream(make_message('pub', msg)))
 
     def connection_made(self, transport):
-        self.transport = transport
-        self.publish_message()
+        transport.write(prepare_stream(make_message('sub', self.rule)))
 
     def data_received(self, data):
         msgs, rest = parse_stream(self.rest, data)
         self.rest = rest
         for ty, body in msgs:
-            if ty == 'rep':
+            if ty == 'pub':
+                self.callback(body)
+            elif ty == 'rep':
                 if body["succeeded"]:
-                    self.count += 1
-                    logging.info(
-                        "Successfully published {} messages".format(self.count))
+                    logging.info("Successfully subscribe at a hub.")
                 else:
-                    logging.warning("A previous publishing failed.")
+                    logging.warning("Failed to subscribe at a hub.")
+
             else:
                 logging.warning(
                     "Invalid message type: {} from server".format(ty))
-
-        self.publish_message()

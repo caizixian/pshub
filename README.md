@@ -1,11 +1,11 @@
-# Plumbum
-Plumbum is a lightweight Python framework that partially implements Publish/Subscribe messaging paradigm. 
+# pshub
+`pshub` is a lightweight Python framework that partially implements Publish/Subscribe messaging paradigm. 
 
 It utilizes `asyncio` library to support concurrent requests handling. The Python version that we recommend is 3.5+ .
 
 ## Name
 
-The name `Plumbum` is Latin word of element Lead, whose symbol is Pb. It's not a well-chosen name because there exists another Python library with the same name. We might change the name of this library in the future.
+The name `pshub` indicates the three main components of this library — Pub, Sub and Hub.
 
 ## Usage
 

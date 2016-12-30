@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Plumbum - A Pub/Sub framework implemented in Python
+# pshub - A Pub/Sub framework implemented in Python
 # Copyright (C) 2016  caizixian, lwher
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,9 @@
 
 import asyncio
 import logging
-from plumbum.networking.protocol import parse_stream, prepare_stream, \
+from pshub.networking.protocol import parse_stream, prepare_stream, \
     make_message
-from plumbum.matchingengine import RuleFactory
+from pshub.matchingengine import RuleFactory
 
 
 class HubClients(object):

@@ -37,10 +37,7 @@ def _two_partial(func, second_param):
     return fun
 
 
-class RuleFactory:
-    """
-    RuleFactory provides methods to create Rules
-    """
+class Rule:
     operators = {
         "contains": contains,
         "<": lt,
@@ -51,9 +48,6 @@ class RuleFactory:
         "!=": ne,
         "excludes": _my_not(contains)
     }
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def from_dict(rule):
@@ -67,13 +61,11 @@ class RuleFactory:
 
         for key, value in rule.items():
             for operator, operand in value.items():
-                fun = _two_partial(RuleFactory.operators[operator], operand)
+                fun = _two_partial(Rule.operators[operator], operand)
                 constraints[key].append(fun)
 
         return Rule(constraints=constraints)
 
-
-class Rule:
     def __init__(self, constraints):
         self.constraints = constraints
 

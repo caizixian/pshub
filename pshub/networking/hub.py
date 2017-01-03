@@ -20,7 +20,7 @@ import asyncio
 import logging
 from pshub.networking.protocol import parse_stream, prepare_stream, \
     make_message
-from pshub.matchingengine import RuleFactory
+from pshub.matchingengine import Rule
 
 
 class HubClients(object):
@@ -37,12 +37,9 @@ class HubClients(object):
 
 
 class HubProtocol(asyncio.Protocol):
-    def __init__(self, loop, clients=None):
+    def __init__(self, loop, clients):
         self.loop = loop
-        if clients:
-            self.clients = clients
-        else:
-            self.clients = HubClients()
+        self.clients = clients
         self.rest = bytearray()
 
     def connection_made(self, transport):
@@ -56,7 +53,7 @@ class HubProtocol(asyncio.Protocol):
         for ty, body in msgs:
             if ty == "sub":
                 self.clients.add_subscriber(self.peername, self.transport,
-                                            RuleFactory.from_dict(body))
+                                            Rule.from_dict(body))
                 self.transport.write(
                     prepare_stream(make_message("rep", {"succeeded": True})))
 

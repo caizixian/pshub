@@ -18,7 +18,7 @@
 
 import asyncio
 import logging
-from pshub import HubProtocol
+from pshub import HubProtocol, HubClients
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -27,7 +27,8 @@ def main():
     loop = asyncio.get_event_loop()
     host = '127.0.0.1'
     port = 8888
-    coro = loop.create_server(lambda: HubProtocol(loop), host,
+    clients = HubClients()
+    coro = loop.create_server(lambda: HubProtocol(loop, clients), host,
                               port)
     server = loop.run_until_complete(coro)
 

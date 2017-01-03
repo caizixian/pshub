@@ -19,3 +19,4 @@
 from .networking.pub import PubProtocol
 from .networking.sub import SubProtocol
 from .networking.hub import HubProtocol
+from .networking.hub import HubClients
